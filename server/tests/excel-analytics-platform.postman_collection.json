@@ -1,0 +1,562 @@
+{
+  "info": {
+    "_postman_id": "a7e9c3b1-5f8d-4a5c-9e9a-8f6d8e7c6b5a",
+    "name": "Excel Analytics Platform",
+    "description": "API endpoints for the Excel Analytics Platform",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Checks",
+      "item": [
+        {
+          "name": "Root Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                ""
+              ]
+            },
+            "description": "Check if the backend is running"
+          },
+          "response": []
+        },
+        {
+          "name": "API Ping",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/ping",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "ping"
+              ]
+            },
+            "description": "Check if the API is responding"
+          },
+          "response": []
+        },
+        {
+          "name": "API Test (No Auth)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/test",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "test"
+              ]
+            },
+            "description": "Test endpoint that doesn't require authentication"
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints to check the health of the API"
+    },
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"firstName\": \"Test\",\n    \"lastName\": \"User\",\n    \"organization\": \"Test Org\",\n    \"username\": \"testuser\",\n    \"email\": \"test@example.com\",\n    \"password\": \"Password123!\",\n    \"role\": \"analyst\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
+            },
+            "description": "Register a new user. Valid roles include: student, analyst, cxo, data engineer, data scientist, devops, engineer, fullstack developer, director, product manager, system architect, others"
+          },
+          "response": []
+        },
+        {
+          "name": "Login User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if (response.token) {",
+                  "    pm.environment.set('authToken', response.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"test@example.com\",\n    \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Login a user and get JWT token"
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Email",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/verify/:token",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "verify",
+                ":token"
+              ],
+              "variable": [
+                {
+                  "key": "token",
+                  "value": "verification-token-here"
+                }
+              ]
+            },
+            "description": "Verify user email with token"
+          },
+          "response": []
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"test@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/forgot-password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "forgot-password"
+              ]
+            },
+            "description": "Request password reset"
+          },
+          "response": []
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"token\": \"reset-token-here\",\n    \"password\": \"NewPassword123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/reset-password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "reset-password"
+              ]
+            },
+            "description": "Reset password with token"
+          },
+          "response": []
+        }
+      ],
+      "description": "Authentication endpoints"
+    },
+    {
+      "name": "Excel Files",
+      "item": [
+        {
+          "name": "Upload Excel File",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "excelFile",
+                  "type": "file",
+                  "src": "../sample_files/sample_data.xlsx"
+                },
+                {
+                  "key": "name",
+                  "value": "Sample Excel File",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "This is a sample Excel file for testing",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/excel/upload",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "excel",
+                "upload"
+              ]
+            },
+            "description": "Upload an Excel file"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Excel Files",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/excel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "excel"
+              ]
+            },
+            "description": "Get all Excel files for the current user"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Excel File by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/excel/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "excel",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "excel-file-id-here"
+                }
+              ]
+            },
+            "description": "Get a specific Excel file by ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Excel File",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/excel/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "excel",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "excel-file-id-here"
+                }
+              ]
+            },
+            "description": "Delete an Excel file"
+          },
+          "response": []
+        }
+      ],
+      "description": "Excel file management endpoints"
+    },
+    {
+      "name": "Analysis",
+      "item": [
+        {
+          "name": "Create Analysis",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Sample Analysis\",\n    \"description\": \"This is a sample analysis\",\n    \"excelFileId\": \"excel-file-id-here\",\n    \"chartType\": \"2d-bar\",\n    \"chartConfig\": {\n        \"title\": \"Sample Chart\",\n        \"darkMode\": true,\n        \"colors\": [\"#FF6384\", \"#36A2EB\", \"#FFCE56\"]\n    },\n    \"dataMappings\": {\n        \"x\": \"Column A\",\n        \"y\": \"Column B\",\n        \"color\": \"Column C\"\n    }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/analysis",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "analysis"
+              ]
+            },
+            "description": "Create a new analysis"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Analyses",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/analysis",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "analysis"
+              ]
+            },
+            "description": "Get all analyses for the current user"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Analysis by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/analysis/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "analysis",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "analysis-id-here"
+                }
+              ]
+            },
+            "description": "Get a specific analysis by ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Analysis",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Updated Analysis\",\n    \"description\": \"This is an updated analysis\",\n    \"chartType\": \"2d-line\",\n    \"chartConfig\": {\n        \"title\": \"Updated Chart\",\n        \"darkMode\": false,\n        \"colors\": [\"#FF6384\", \"#36A2EB\", \"#FFCE56\"]\n    },\n    \"dataMappings\": {\n        \"x\": \"Column A\",\n        \"y\": [\"Column B\", \"Column C\"],\n        \"color\": \"Column D\"\n    }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/analysis/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "analysis",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "analysis-id-here"
+                }
+              ]
+            },
+            "description": "Update an existing analysis"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Analysis",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/analysis/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "analysis",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "analysis-id-here"
+                }
+              ]
+            },
+            "description": "Delete an analysis"
+          },
+          "response": []
+        }
+      ],
+      "description": "Analysis management endpoints"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5001",
+      "type": "string"
+    }
+  ]
+}

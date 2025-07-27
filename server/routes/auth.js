@@ -3,7 +3,7 @@ const express = require("express");
 const router = express.Router();
 module.exports = router;
 
-const { registerUser } = require("../controllers/authController");
+const { registerUser, loginUser, verifyEmail } = require("../controllers/authController");
 
 
 
@@ -12,6 +12,8 @@ const { registerUser } = require("../controllers/authController");
 
 
 router.post("/register", registerUser);
+router.post("/login", loginUser);
+router.get("/verify", verifyEmail);
 
 router.get("/dashboard", protect, (req, res) => {
   res.json({ message: `Welcome ${req.user.email}, you are authenticated!` });
