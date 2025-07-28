@@ -171,7 +171,7 @@ export default function Navbar() {
         <div className="relative">
           <button
             onClick={toggleLogin}
-            className="bg-purple-700 hover:bg-purple-600 transition px-4 py-2 rounded-md shadow-lg text-white font-semibold"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
           >
             Login
           </button>

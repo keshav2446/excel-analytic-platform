@@ -21,15 +21,15 @@ export default function AdminLogin() {
     <div
       className={`flex justify-center items-center min-h-screen px-4 transition-all duration-300 ${
         isDark
-          ? "bg-gradient-to-br from-gray-900 via-purple-900 to-gray-800 text-white"
-          : "bg-gradient-to-br from-white via-purple-100 to-gray-100 text-gray-900"
+          ? "bg-gradient-to-br from-gray-900 via-blue-900 to-gray-800 text-white"
+          : "bg-gradient-to-br from-white via-blue-100 to-gray-100 text-gray-900"
       }`}
     >
       {/* Theme Toggle */}
       <button
         onClick={() => setTheme(isDark ? "light" : "dark")}
         className={`absolute top-6 right-6 text-xl p-2 rounded-full shadow ${
-          isDark ? "bg-white/10 text-white" : "bg-purple-200 text-purple-800"
+          isDark ? "bg-white/10 text-white" : "bg-blue-200 text-blue-800"
         }`}
         title="Toggle Theme"
       >
@@ -40,11 +40,11 @@ export default function AdminLogin() {
         className={`w-full max-w-md p-8 rounded-2xl shadow-2xl backdrop-blur-md ${
           isDark
             ? "bg-white/10 text-white"
-            : "bg-white border border-purple-200 text-gray-900"
+            : "bg-white border border-blue-200 text-gray-900"
         }`}
       >
         <div className="flex justify-center items-center mb-4">
-          <FaUserShield className="text-4xl text-purple-400" />
+          <FaUserShield className="text-4xl text-blue-400" />
         </div>
         <h2 className="text-3xl font-bold text-center mb-2">Admin Login</h2>
         <p className="text-center text-sm mb-6">
@@ -53,7 +53,7 @@ export default function AdminLogin() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="text-sm">Admin Email</label>
+            <label className="text-sm dark:text-white">Admin Email</label>
             <input
               type="email"
               name="email"
@@ -62,14 +62,14 @@ export default function AdminLogin() {
               className={`w-full mt-1 p-2 rounded-lg outline-none ${
                 isDark
                   ? "bg-white/20 border border-white/30 text-white"
-                  : "bg-purple-50 border border-purple-200"
+                  : "bg-blue-50 border border-blue-200"
               }`}
               required
             />
           </div>
 
           <div className="relative">
-            <label className="text-sm">Password</label>
+            <label className="text-sm dark:text-white">Password</label>
             <input
               type={showPassword ? "text" : "password"}
               name="password"
@@ -78,7 +78,7 @@ export default function AdminLogin() {
               className={`w-full mt-1 p-2 pr-10 rounded-lg outline-none ${
                 isDark
                   ? "bg-white/20 border border-white/30 text-white"
-                  : "bg-purple-50 border border-purple-200"
+                  : "bg-blue-50 border border-blue-200"
               }`}
               required
             />
@@ -94,8 +94,8 @@ export default function AdminLogin() {
             type="submit"
             className={`w-full font-bold py-2 rounded-lg transition ${
               isDark
-                ? "bg-white text-purple-700 hover:bg-purple-100"
-                : "bg-purple-600 text-white hover:bg-purple-700"
+                ? "bg-white text-blue-700 hover:bg-blue-100"
+                : "bg-blue-600 text-white hover:bg-blue-700"
             }`}
           >
             Login as Admin
@@ -107,7 +107,7 @@ export default function AdminLogin() {
           <a
             href="/userlogin"
             className={`underline font-semibold ${
-              isDark ? "text-white" : "text-purple-800"
+              isDark ? "text-white" : "text-blue-800"
             }`}
           >
             Login as user

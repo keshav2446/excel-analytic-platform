@@ -186,8 +186,8 @@ const Dashboard = ({ user, onLogout }) => {
     <div
   className={`min-h-screen pt-20 transition-all duration-300 ${
     isDark
-      ? "bg-gradient-to-br from-gray-900 via-purple-900 to-gray-800 text-black"
-      : "bg-gradient-to-br from-white via-purple-100 to-gray-100 text-gray-900"
+      ? "bg-gradient-to-br from-gray-900 via-slate-800 to-blue-900 text-white"
+      : "bg-gradient-to-br from-white via-slate-100 to-gray-100 text-gray-900"
   }`}
 >
 
@@ -216,7 +216,8 @@ const Dashboard = ({ user, onLogout }) => {
         {/* File Upload and Upload History Side by Side */}
         <div className="mb-8 flex flex-col md:flex-row gap-6">
           {/* Drag and Drop Upload Card */}
-          <div className="flex-1 bg-white rounded-2xl shadow-lg p-8">
+          <div className="flex-1 bg-slate-800 text-white rounded-2xl shadow-lg p-8">
+
             <h2 className="text-xl font-semibold text-navy-500 mb-2">Upload Excel File</h2>
             <div
               {...getRootProps()}
@@ -234,7 +235,8 @@ const Dashboard = ({ user, onLogout }) => {
             </div>
           </div>
           {/* Upload History Card */}
-          <div className="flex-1 bg-white rounded-2xl shadow-lg p-8">
+          <div className="flex-1 bg-slate-800 text-white rounded-2xl shadow-lg p-8">
+
             <h2 className="text-xl font-semibold text-navy-500 mb-2">Upload History</h2>
             <ul className="rounded-lg p-5 bg-navy-100">
               {uploadedFiles.length === 0 ? (
@@ -303,7 +305,8 @@ const Dashboard = ({ user, onLogout }) => {
         {/* Main Content Area */}
         <div className="mb-8">
           {activeTab === 'graph' && (
-            <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="bg-slate-800 text-white rounded-lg shadow-md p-6">
+
               <h3 className="text-lg font-semibold text-navy-900 mb-4">Graph View</h3>
               {/* Placeholder for chart - replace with chart library as needed */}
               <div className="h-64 flex items-center justify-center bg-gradient-to-br from-navy-50 to-pink-50 rounded-lg">
@@ -324,19 +327,22 @@ const Dashboard = ({ user, onLogout }) => {
             </div>
           )}
           {activeTab === 'insights' && (
-            <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="bg-slate-800 text-white rounded-lg shadow-md p-6">
+
               <h3 className="text-lg font-semibold text-navy-900 mb-4">Insights and Summaries</h3>
               <p className="text-navy-600">(Insights and summaries based on uploaded data will appear here.)</p>
             </div>
           )}
           {activeTab === 'reports' && (
-            <div className="bg-white rounded-lg shadow-md p-6">
+           <div className="bg-slate-800 text-white rounded-lg shadow-md p-6">
+
               <h3 className="text-lg font-semibold text-navy-900 mb-4">Reports</h3>
               <p className="text-navy-600">(Reports section coming soon.)</p>
             </div>
           )}
           {activeTab === 'settings' && (
-            <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="bg-slate-800 text-white rounded-lg shadow-md p-6">
+
               <h3 className="text-lg font-semibold text-navy-900 mb-4">Settings</h3>
               <p className="text-navy-600">(Settings section coming soon.)</p>
             </div>
@@ -346,7 +352,8 @@ const Dashboard = ({ user, onLogout }) => {
         {/* Additional Widgets */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
           {/* Quick Actions */}
-          <div className="bg-white rounded-lg shadow-md p-6">
+         <div className="bg-slate-800 text-white rounded-lg shadow-md p-6">
+
             <h3 className="text-lg font-semibold text-navy-900 mb-4">Quick Actions</h3>
             <div className="grid grid-cols-2 gap-4">
               <button className="p-4 border border-navy-200 rounded-lg hover:bg-navy-50 transition-colors duration-200">
@@ -369,7 +376,7 @@ const Dashboard = ({ user, onLogout }) => {
           </div>
 
           {/* System Status */}
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-slate-800 text-white rounded-lg p-6 shadow-md">
             <h3 className="text-lg font-semibold text-navy-900 mb-4">System Status</h3>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
@@ -398,48 +405,63 @@ const Dashboard = ({ user, onLogout }) => {
           </div>
         </div>
 
-        {/* 2D/3D Graph Tabs Section */}
-        <div className="mt-12">
-          <h2 className="text-2xl font-bold text-navy-900 mb-4">Graph Types by Dimension</h2>
-          <div className="flex space-x-4 mb-6">
-            <button
-              className={`px-6 py-2 rounded-full font-semibold border-2 transition-all duration-200 ${activeGraphTab === '2D' ? 'bg-pink-500 text-white border-pink-500' : 'bg-white text-navy-700 border-navy-200 hover:bg-pink-50'}`}
-              onClick={() => setActiveGraphTab('2D')}
-            >
-              2D Graphs
-            </button>
-            <button
-              className={`px-6 py-2 rounded-full font-semibold border-2 transition-all duration-200 ${activeGraphTab === '3D' ? 'bg-pink-500 text-white border-pink-500' : 'bg-white text-navy-700 border-navy-200 hover:bg-pink-50'}`}
-              onClick={() => setActiveGraphTab('3D')}
-            >
-              3D Graphs
-            </button>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {(activeGraphTab === '2D' ? graph2D : graph3D).map((g, i) => (
-              <button
-                key={i}
-                className={`flex items-center space-x-4 p-4 rounded-lg bg-white shadow hover:bg-pink-50 transition border-2 focus:outline-none ${selectedGraphType === g.name ? 'border-pink-500 ring-2 ring-pink-200' : 'border-transparent'}`}
-                onClick={() => setSelectedGraphType(g.name)}
-                type="button"
-              >
-                <span className="text-3xl">{g.icon}</span>
-                <div className="text-left">
-                  <div className="font-medium text-navy-900">{g.name}</div>
-                  <div className="text-sm text-navy-500">{g.desc}</div>
-                </div>
-              </button>
-            ))}
-          </div>
+      {/* 2D/3D Graph Tabs Section */}
+<div className="mt-12">
+  <h2 className="text-2xl font-bold text-white mb-4">Graph Types by Dimension</h2>
+  <div className="flex space-x-4 mb-6">
+    <button
+      className={`px-6 py-2 rounded-full font-semibold border-2 transition-all duration-200 ${
+        activeGraphTab === '2D'
+          ? 'bg-pink-500 text-white border-pink-500'
+          : 'bg-slate-700 text-slate-200 border-slate-500 hover:bg-slate-600'
+      }`}
+      onClick={() => setActiveGraphTab('2D')}
+    >
+      2D Graphs
+    </button>
+    <button
+      className={`px-6 py-2 rounded-full font-semibold border-2 transition-all duration-200 ${
+        activeGraphTab === '3D'
+          ? 'bg-pink-500 text-white border-pink-500'
+          : 'bg-slate-700 text-slate-200 border-slate-500 hover:bg-slate-600'
+      }`}
+      onClick={() => setActiveGraphTab('3D')}
+    >
+      3D Graphs
+    </button>
+  </div>
+
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {(activeGraphTab === '2D' ? graph2D : graph3D).map((g, i) => (
+      <button
+        key={i}
+        className={`flex items-center space-x-4 p-4 rounded-lg bg-slate-800 text-white shadow hover:bg-slate-700 transition border-2 focus:outline-none ${
+          selectedGraphType === g.name
+            ? 'border-pink-500 ring-2 ring-pink-400'
+            : 'border-slate-700'
+        }`}
+        onClick={() => setSelectedGraphType(g.name)}
+        type="button"
+      >
+        <span className="text-3xl">{g.icon}</span>
+        <div className="text-left">
+          <div className="font-medium text-white">{g.name}</div>
+          <div className="text-sm text-slate-300">{g.desc}</div>
         </div>
+      </button>
+    ))}
+  </div>
+</div>
+
 
         {/* Most Used Graph Types */}
         <div className="mt-12">
           <h2 className="text-2xl font-bold text-navy-900 mb-6">Most Used Graph Types</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
             {graphCategories.map((cat, idx) => (
-              <div key={idx} className="bg-white rounded-xl shadow-lg p-6">
-                <h3 className="text-xl font-semibold text-pink-600 mb-4">{cat.title}</h3>
+             <div key={idx} className="bg-slate-800 text-white rounded-xl shadow-lg p-6">
+               <h3 className="text-xl font-semibold text-pink-400 mb-4">{cat.title}</h3>
+
                 <div className="grid grid-cols-2 gap-4">
                   {cat.graphs.map((g, i) => (
                     <div key={i} className="flex items-center space-x-4 p-3 rounded-lg hover:bg-pink-50 transition">
