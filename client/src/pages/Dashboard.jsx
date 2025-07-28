@@ -199,7 +199,21 @@ const Dashboard = ({ user, onLogout }) => {
   title="Toggle Theme"
 >
   {isDark ? <FaSun /> : <FaMoon />}
+  
 </button>
+
+
+<button
+  onClick={() => {
+    localStorage.removeItem("token");
+    window.location.href = "/userlogin";
+  }}
+  className="absolute top-6 right-18 bg-red-500 text-white px-4 py-2 rounded"
+>
+  Logout
+</button>
+
+
 
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
