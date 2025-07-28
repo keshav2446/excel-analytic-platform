@@ -3,6 +3,8 @@ import { FaUserCircle } from "react-icons/fa";
 import { IoEye, IoEyeOff } from "react-icons/io5";
 import { FaSun, FaMoon } from "react-icons/fa";
 import SocialLogin from "../components/SocialLogin";
+import axios from "axios";
+
 
 
 export default function Register() {
@@ -23,10 +25,41 @@ export default function Register() {
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Register form data:", form);
-  };
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  // Simple password match validation
+  if (form.password !== form.confirmPassword) {
+    alert("Passwords do not match!");
+    return;
+  }
+
+  try {
+    const response =await axios.post("http://localhost:5001/api/auth/register", {
+
+      firstName: form.firstName,
+      lastName: form.lastName,
+      organization: form.organization,
+      role: form.role,
+      username: form.username,
+      email: form.email,
+      password: form.password,
+    });
+
+    console.log("✅ Registration successful:", response.data);
+    alert("Registration successful! You can now login.");
+
+    // Optionally reset form
+    // setForm({ ...initial state here... });
+
+    // Optionally redirect
+    // window.location.href = "/userlogin";
+  } catch (error) {
+    console.error("❌ Registration error:", error.response?.data || error.message);
+    alert(error.response?.data?.message || "Registration failed!");
+  }
+};
+
 
   const isDark = theme === "dark";
 

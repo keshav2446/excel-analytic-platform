@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import { FaUserAlt, FaSun, FaMoon } from "react-icons/fa";
 import { IoEye, IoEyeOff } from "react-icons/io5";
 import SocialLogin from "../components/SocialLogin";
@@ -9,13 +11,27 @@ export default function UserLogin() {
   const [theme, setTheme] = useState("dark");
 
   const isDark = theme === "dark";
+  const navigate = useNavigate();
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("User login form data:", form);
+
+    try {
+      const response = await axios.post("http://localhost:5001/api/auth/login", form);
+      console.log("✅ Login successful:", response.data);
+
+      // Save token in localStorage
+      localStorage.setItem("token", response.data.token);
+
+      alert("Login successful!");
+      navigate("/dashboard"); // Change to your desired page
+    } catch (err) {
+      console.error("❌ Login error:", err.response?.data || err.message);
+      alert("Login failed. Please check your credentials.");
+    }
   };
 
   return (
@@ -26,7 +42,6 @@ export default function UserLogin() {
           : "bg-gradient-to-br from-white via-blue-100 to-gray-100 text-gray-900"
       }`}
     >
-      {/* Theme Toggle */}
       <button
         onClick={() => setTheme(isDark ? "light" : "dark")}
         className={`absolute top-6 right-6 text-xl p-2 rounded-full shadow ${
