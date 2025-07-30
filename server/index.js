@@ -9,8 +9,10 @@ const authRoutes = require("./routes/auth");
 const excelRoutes = require("./routes/excel");
 const analysisRoutes = require("./routes/analysis");
 
-// Load environment variables
+
+
 dotenv.config();
+console.log("🔐 JWT_SECRET from env:", process.env.JWT_SECRET);
 
 // Connect to MongoDB
 connectDB();

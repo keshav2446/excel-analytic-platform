@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
-// Add imports for file upload and Excel parsing
 import { useDropzone } from 'react-dropzone';
 import * as XLSX from 'xlsx';
 import { FaSun, FaMoon } from "react-icons/fa";
+ import axios from "axios"; 
+ import { toast, ToastContainer } from "react-toastify";
+ import "react-toastify/dist/ReactToastify.css";
+
 
 const graphCategories = [
   {
@@ -115,24 +118,76 @@ const Dashboard = ({ user, onLogout }) => {
 
 
   // Dropzone for file upload
-  const onDrop = (acceptedFiles) => {
-    const file = acceptedFiles[0];
-    setUploadedFiles((prev) => [...prev, { name: file.name, date: new Date().toLocaleString() }]);
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const data = new Uint8Array(e.target.result);
-      const workbook = XLSX.read(data, { type: 'array' });
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
-      const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-      setExcelData(json);
-      setColumns(json[0] || []);
-    };
-    reader.readAsArrayBuffer(file);
+
+
+const onDrop = async (acceptedFiles) => {
+  const file = acceptedFiles[0];
+
+  // ✅ Validate file extension before upload
+  const allowedExtensions = [".xls", ".xlsx"];
+  const fileExtension = file.name.slice(file.name.lastIndexOf(".")).toLowerCase();
+
+  if (!allowedExtensions.includes(fileExtension)) {
+    toast.error("❌ Upload Failed: Only .xls/.xlsx files allowed");
+    return;
+  }
+
+  // ✅ Local preview
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const data = new Uint8Array(e.target.result);
+    const workbook = XLSX.read(data, { type: "array" });
+    const sheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[sheetName];
+    const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+    setExcelData(json);
+    setColumns(json[0] || []);
   };
+  reader.readAsArrayBuffer(file);
+
+  // ✅ Upload to server
+  try {
+    const formData = new FormData();
+    formData.append("excelFile", file);
+    const token = localStorage.getItem("token");
+
+    const res = await fetch("http://localhost:5001/api/excel/upload", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    const responseData = await res.json(); // read response body
+
+    if (res.status === 401) {
+      toast.error("❌ Unauthorized: Please log in again.");
+      return;
+    }
+
+    if (!res.ok) {
+      toast.error(`❌ Upload Failed: ${responseData.message || "Unknown error"}`);
+      return;
+    }
+
+    // ✅ Success
+    toast.success("✅ File uploaded successfully");
+    setUploadedFiles((prev) => [
+      ...prev,
+      { name: file.name, date: new Date().toLocaleString() },
+    ]);
+  } catch (err) {
+    console.error("❌ Upload Failed:", err.message);
+    toast.error(`❌ Upload Failed: ${err.message}`);
+  }
+};
+
+
+
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, accept: '.xlsx,.xls' });
 
-  // Download chart as image (placeholder logic)
   const handleDownloadChart = () => {
     alert('Download chart feature coming soon!');
   };
@@ -251,6 +306,9 @@ const Dashboard = ({ user, onLogout }) => {
           {/* Upload History Card */}
           <div className="flex-1 bg-slate-800 text-white rounded-2xl shadow-lg p-8">
 
+          <ToastContainer position="top-right" autoClose={3000} />
+
+
             <h2 className="text-xl font-semibold text-navy-500 mb-2">Upload History</h2>
             <ul className="rounded-lg p-5 bg-navy-100">
               {uploadedFiles.length === 0 ? (
@@ -322,7 +380,7 @@ const Dashboard = ({ user, onLogout }) => {
             <div className="bg-slate-800 text-white rounded-lg shadow-md p-6">
 
               <h3 className="text-lg font-semibold text-navy-900 mb-4">Graph View</h3>
-              {/* Placeholder for chart - replace with chart library as needed */}
+              {/* Placeholder for chart */}
               <div className="h-64 flex items-center justify-center bg-gradient-to-br from-navy-50 to-pink-50 rounded-lg">
                 {xAxis && yAxis && excelData ? (
                   <div className="text-center">
@@ -363,9 +421,8 @@ const Dashboard = ({ user, onLogout }) => {
           )}
         </div>
 
-        {/* Additional Widgets */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
-          {/* Quick Actions */}
+
          <div className="bg-slate-800 text-white rounded-lg shadow-md p-6">
 
             <h3 className="text-lg font-semibold text-navy-900 mb-4">Quick Actions</h3>
