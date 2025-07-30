@@ -10,7 +10,7 @@ const uploadExcel = async (req, res) => {
     console.log('🔐 Request user:', req.user);
     console.log('📄 Request file:', req.file);
 
-    // ✅ Allowed file type check
+   
     const allowedExtensions = ['.xls', '.xlsx'];
     const fileExt = path.extname(req.file.originalname).toLowerCase();
 
@@ -18,7 +18,7 @@ const uploadExcel = async (req, res) => {
       return res.status(400).json({ message: "Only Excel files are allowed (.xls, .xlsx)" });
     }
 
-    // ✅ Auth check
+  
     if (!req.user || (!req.user._id && !req.user.id)) {
       if (req.file?.path) {
         fs.unlink(req.file.path, (err) => {
@@ -28,7 +28,7 @@ const uploadExcel = async (req, res) => {
       return res.status(401).json({ message: "User not authenticated" });
     }
 
-    // ✅ File details
+   
     const { originalname, filename, size, mimetype } = req.file;
     const filePath = path.join(__dirname, "../uploads", filename);
 
@@ -36,7 +36,6 @@ const uploadExcel = async (req, res) => {
       return res.status(400).json({ message: "File not saved correctly" });
     }
 
-    // ✅ Parse Excel
     const workbook = XLSX.readFile(filePath);
     if (!workbook || !workbook.SheetNames || workbook.SheetNames.length === 0) {
       return res.status(400).json({ message: "Invalid Excel file or no sheets found" });
@@ -85,7 +84,6 @@ const uploadExcel = async (req, res) => {
   }
 };
 
-// ✅ Get all Excel files for a user
 const getUserExcelFiles = async (req, res) => {
   try {
     const userId = req.user._id || req.user.id;
@@ -100,7 +98,6 @@ const getUserExcelFiles = async (req, res) => {
   }
 };
 
-// ✅ Get Excel file by ID
 const getExcelFileById = async (req, res) => {
   try {
     const excelFile = await Excel.findById(req.params.id);
@@ -120,7 +117,6 @@ const getExcelFileById = async (req, res) => {
   }
 };
 
-// ✅ Delete Excel file
 const deleteExcelFile = async (req, res) => {
   try {
     const excelFile = await Excel.findById(req.params.id);

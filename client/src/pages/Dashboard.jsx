@@ -123,7 +123,6 @@ const Dashboard = ({ user, onLogout }) => {
 const onDrop = async (acceptedFiles) => {
   const file = acceptedFiles[0];
 
-  // ✅ Validate file extension before upload
   const allowedExtensions = [".xls", ".xlsx"];
   const fileExtension = file.name.slice(file.name.lastIndexOf(".")).toLowerCase();
 
@@ -132,7 +131,6 @@ const onDrop = async (acceptedFiles) => {
     return;
   }
 
-  // ✅ Local preview
   const reader = new FileReader();
   reader.onload = (e) => {
     const data = new Uint8Array(e.target.result);
@@ -145,7 +143,7 @@ const onDrop = async (acceptedFiles) => {
   };
   reader.readAsArrayBuffer(file);
 
-  // ✅ Upload to server
+  // Upload to server
   try {
     const formData = new FormData();
     formData.append("excelFile", file);
@@ -159,7 +157,7 @@ const onDrop = async (acceptedFiles) => {
       body: formData,
     });
 
-    const responseData = await res.json(); // read response body
+    const responseData = await res.json(); 
 
     if (res.status === 401) {
       toast.error("❌ Unauthorized: Please log in again.");
@@ -171,7 +169,6 @@ const onDrop = async (acceptedFiles) => {
       return;
     }
 
-    // ✅ Success
     toast.success("✅ File uploaded successfully");
     setUploadedFiles((prev) => [
       ...prev,
