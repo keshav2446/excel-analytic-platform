@@ -6,19 +6,17 @@ const path = require("path");
 // ✅ Upload and parse Excel file
 const uploadExcel = async (req, res) => {
   try {
-    console.log('📥 Upload request received');
-    console.log('🔐 Request user:', req.user);
-    console.log('📄 Request file:', req.file);
+    console.log("📥 Upload request received");
+    console.log("🔐 Request user:", req.user);
+    console.log("📄 Request file:", req.file);
 
-   
-    const allowedExtensions = ['.xls', '.xlsx'];
+    const allowedExtensions = [".xls", ".xlsx"];
     const fileExt = path.extname(req.file.originalname).toLowerCase();
 
     if (!allowedExtensions.includes(fileExt)) {
       return res.status(400).json({ message: "Only Excel files are allowed (.xls, .xlsx)" });
     }
 
-  
     if (!req.user || (!req.user._id && !req.user.id)) {
       if (req.file?.path) {
         fs.unlink(req.file.path, (err) => {
@@ -28,7 +26,6 @@ const uploadExcel = async (req, res) => {
       return res.status(401).json({ message: "User not authenticated" });
     }
 
-   
     const { originalname, filename, size, mimetype } = req.file;
     const filePath = path.join(__dirname, "../uploads", filename);
 
@@ -64,6 +61,8 @@ const uploadExcel = async (req, res) => {
     });
 
     await newExcel.save();
+
+    // Delete temp file
     fs.unlink(filePath, (err) => {
       if (err) console.error("⚠️ Error deleting temp file:", err);
     });
@@ -71,7 +70,7 @@ const uploadExcel = async (req, res) => {
     return res.status(201).json({
       message: "✅ Excel file uploaded and processed successfully",
       excelId: newExcel._id,
-      columns: columns,
+      columns,
       rowCount: jsonData.length,
     });
 
@@ -79,25 +78,33 @@ const uploadExcel = async (req, res) => {
     console.error("❌ Error uploading Excel file:", error);
     return res.status(500).json({
       message: "Server error during file upload",
-      error: error.message
+      error: error.message,
     });
   }
 };
 
+// ✅ Fetch user files with sampleData (first 10 rows)
 const getUserExcelFiles = async (req, res) => {
   try {
     const userId = req.user._id || req.user.id;
+
     const excelFiles = await Excel.find({ uploadedBy: userId })
-      .select("fileName originalName fileSize fileType columns rowCount createdAt")
+      .select("fileName originalName fileSize fileType columns rowCount createdAt data")
       .sort({ createdAt: -1 });
 
-    res.status(200).json(excelFiles);
+    const filesWithSample = excelFiles.map((file) => ({
+      ...file.toObject(),
+      sampleData: file.data.slice(0, 10), // ✅ Only top 10 rows
+    }));
+
+    res.status(200).json(filesWithSample);
   } catch (error) {
     console.error("❌ Error fetching Excel files:", error);
     res.status(500).json({ message: "Server error while fetching Excel files" });
   }
 };
 
+// ✅ Get Excel file by ID
 const getExcelFileById = async (req, res) => {
   try {
     const excelFile = await Excel.findById(req.params.id);
@@ -117,6 +124,7 @@ const getExcelFileById = async (req, res) => {
   }
 };
 
+// ✅ Delete Excel file
 const deleteExcelFile = async (req, res) => {
   try {
     const excelFile = await Excel.findById(req.params.id);

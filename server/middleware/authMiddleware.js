@@ -1,6 +1,5 @@
 const jwt = require("jsonwebtoken");
 
-// Log JWT secret to make sure it's available
 console.log("🔐 JWT_SECRET from env:", process.env.JWT_SECRET);
 
 const protect = (req, res, next) => {
