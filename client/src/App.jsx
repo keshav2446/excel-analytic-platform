@@ -7,7 +7,9 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Dashboard from "./pages/Dashboard";
 import PrivateRoute from "./components/PrivateRoute";
-import Layout from "./components/Layout"; // ✅ Import Layout
+import Layout from "./components/Layout";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
@@ -29,6 +31,8 @@ function App() {
             }
           />
         </Routes>
+        {/* ✅ ToastContainer should be OUTSIDE <Routes> */}
+        <ToastContainer position="top-right" theme="colored" />
       </Layout>
     </Router>
   );
