@@ -15,6 +15,15 @@ export default function AdminRoutes() {
         <Route path="users" element={<AdminUsers />} />
         <Route path="analytics" element={<AdminAnalytics />} />
         <Route path="messages" element={<AdminMessages />} />
+        <Route path="/admin/users" element={<AdminUsers />} />
+        <Route path="/admin/messages" element={<AdminMessages />} />
+        <Route path="/admin/uploads" element={<AdminUploads />} />
+        <Route path="/admin/analytics" element={<AdminAnalytics />} />
+        
+
+
+
+
   
       </Route>
     </Routes>
