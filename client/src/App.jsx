@@ -8,6 +8,7 @@ import Contact from "./pages/Contact";
 import Dashboard from "./pages/Dashboard";
 import PrivateRoute from "./components/PrivateRoute";
 import Layout from "./components/Layout";
+import AdminRoutes from "./admin/AdminRoutes";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -16,6 +17,7 @@ function App() {
     <Router>
       <Layout>
         <Routes>
+          {/* User Side */}
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
@@ -30,8 +32,10 @@ function App() {
               </PrivateRoute>
             }
           />
+
+          {/* Admin Routes */}
+          <Route path="/admin/*" element={<AdminRoutes />} />
         </Routes>
-        {/* ✅ ToastContainer should be OUTSIDE <Routes> */}
         <ToastContainer position="top-right" theme="colored" />
       </Layout>
     </Router>
