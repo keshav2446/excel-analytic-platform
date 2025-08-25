@@ -51,7 +51,7 @@ const uploadExcel = async (req, res) => {
       const columns = Object.keys(jsonData[0] || {});
       console.log('Columns:', columns);
       
-      if (!req.user || !req.user._id) {
+      if (!req.user || !req.user.id) {
         return res.status(401).json({ message: "User not authenticated properly" });
       }
       
@@ -61,7 +61,7 @@ const uploadExcel = async (req, res) => {
         originalName: originalname,
         fileSize: size,
         fileType: mimetype,
-        uploadedBy: req.user._id,
+        uploadedBy: req.user.id,
         columns: columns,
         data: jsonData,
         rowCount: jsonData.length,
@@ -101,7 +101,7 @@ const uploadExcel = async (req, res) => {
 // Get all Excel files for a user
 const getUserExcelFiles = async (req, res) => {
   try {
-    const excelFiles = await Excel.find({ uploadedBy: req.user._id })
+    const excelFiles = await Excel.find({ uploadedBy: req.user.id })
       .select("fileName originalName fileSize fileType columns rowCount createdAt")
       .sort({ createdAt: -1 });
 
@@ -122,7 +122,7 @@ const getExcelFileById = async (req, res) => {
     }
 
     // Check if the user is authorized to access this file
-    if (excelFile.uploadedBy.toString() !== req.user._id.toString() && req.user.role !== "admin") {
+    if (excelFile.uploadedBy.toString() !== req.user.id.toString() && req.user.role !== "admin") {
       return res.status(403).json({ message: "Not authorized to access this file" });
     }
 
@@ -143,7 +143,7 @@ const deleteExcelFile = async (req, res) => {
     }
 
     // Check if the user is authorized to delete this file
-    if (excelFile.uploadedBy.toString() !== req.user._id.toString() && req.user.role !== "admin") {
+    if (excelFile.uploadedBy.toString() !== req.user.id.toString() && req.user.role !== "admin") {
       return res.status(403).json({ message: "Not authorized to delete this file" });
     }
 

@@ -176,6 +176,11 @@ A comprehensive platform for uploading, analyzing, and managing Excel files with
    - Use the "Upload Excel File" request to upload the sample Excel file
    - Explore other endpoints as needed
 
+4. Resend Email Verification
+   - Added a feature where users can resend the verification email if they did nor receive it the first time.
+   - This helps users to activate their account easily in case the original email was lost or went to spam.
+   - Add a key named `token` with the vlaue `{{verificationToken}}` 
+
 ## Troubleshooting
 
 ### Common Issues

@@ -73,6 +73,24 @@
       "item": [
         {
           "name": "Register User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if (response.email) {",
+                  "    pm.environment.set('testUserEmail', response.email);",
+                  "}",
+                  "pm.test('Registration successful', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "    pm.expect(response.message).to.include('verification');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -83,7 +101,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"firstName\": \"Test\",\n    \"lastName\": \"User\",\n    \"organization\": \"Test Org\",\n    \"username\": \"testuser\",\n    \"email\": \"test@example.com\",\n    \"password\": \"Password123!\",\n    \"role\": \"analyst\"\n}"
+              "raw": "{\n    \"firstName\": \"Test\",\n    \"lastName\": \"User\",\n    \"organization\": \"Test Org\",\n    \"username\": \"testuser{{$randomInt}}\",\n    \"email\": \"test{{$randomInt}}@example.com\",\n    \"password\": \"Password123!\",\n    \"role\": \"analyst\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/auth/register",
@@ -96,12 +114,12 @@
                 "register"
               ]
             },
-            "description": "Register a new user. Valid roles include: student, analyst, cxo, data engineer, data scientist, devops, engineer, fullstack developer, director, product manager, system architect, others"
+            "description": "Register a new user. Now sends verification email via Resend API. Valid roles include: student, analyst, cxo, data engineer, data scientist, devops, engineer, fullstack developer, director, product manager, system architect, others"
           },
           "response": []
         },
         {
-          "name": "Login User",
+          "name": "Login User (Verified)",
           "event": [
             {
               "listen": "test",
@@ -110,6 +128,15 @@
                   "const response = pm.response.json();",
                   "if (response.token) {",
                   "    pm.environment.set('authToken', response.token);",
+                  "    pm.test('Login successful', function () {",
+                  "        pm.response.to.have.status(200);",
+                  "        pm.expect(response.token).to.be.a('string');",
+                  "    });",
+                  "} else if (response.needsVerification) {",
+                  "    pm.test('Email verification required', function () {",
+                  "        pm.response.to.have.status(401);",
+                  "        pm.expect(response.message).to.include('verify');",
+                  "    });",
                   "}"
                 ],
                 "type": "text/javascript"
@@ -126,7 +153,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"email\": \"test@example.com\",\n    \"password\": \"Password123!\"\n}"
+              "raw": "{\n    \"email\": \"{{testUserEmail}}\",\n    \"password\": \"Password123!\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/auth/login",
@@ -139,39 +166,71 @@
                 "login"
               ]
             },
-            "description": "Login a user and get JWT token"
+            "description": "Login a user and get JWT token. Now checks for email verification status."
           },
           "response": []
         },
         {
           "name": "Verify Email",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Email verification successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.message).to.include('verification successful');",
+                  "    pm.expect(response.user).to.have.property('email');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/auth/verify/:token",
+              "raw": "{{baseUrl}}/api/auth/verify?token={{verificationToken}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "auth",
-                "verify",
-                ":token"
+                "verify"
               ],
-              "variable": [
+              "query": [
                 {
                   "key": "token",
-                  "value": "verification-token-here"
+                  "value": "{{verificationToken}}",
+                  "description": "Verification token from email"
                 }
               ]
             },
-            "description": "Verify user email with token"
+            "description": "Verify user email with token. Now sends welcome email after successful verification."
           },
           "response": []
         },
         {
-          "name": "Forgot Password",
+          "name": "Resend Verification Email",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Resend verification email successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.message).to.include('Verification email sent');",
+                  "    pm.expect(response.email).to.be.a('string');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -182,7 +241,93 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"email\": \"test@example.com\"\n}"
+              "raw": "{\n    \"email\": \"{{testUserEmail}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/resend-verification",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "resend-verification"
+              ]
+            },
+            "description": "Resend verification email for unverified users. Uses Resend API to send new verification email."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('User deletion successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.message).to.include('deleted successfully');",
+                  "    pm.expect(response.deletedUser).to.have.property('email');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/user/{{userId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "user",
+                "{{userId}}"
+              ]
+            },
+            "description": "Delete a user account. Users can only delete their own account for security reasons. Requires authentication."
+          },
+          "response": []
+        },
+        {
+          "name": "Forgot Password",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Forgot password request successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.message).to.include('password reset link');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"{{testUserEmail}}\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/auth/forgot-password",
@@ -195,12 +340,28 @@
                 "forgot-password"
               ]
             },
-            "description": "Request password reset"
+            "description": "Request password reset. Sends password reset email via Resend API if user exists."
           },
           "response": []
         },
         {
           "name": "Reset Password",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Password reset successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.message).to.include('Password reset successful');",
+                  "    pm.expect(response.user).to.have.property('email');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -211,7 +372,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"token\": \"reset-token-here\",\n    \"password\": \"NewPassword123!\"\n}"
+              "raw": "{\n    \"token\": \"{{resetToken}}\",\n    \"password\": \"NewPassword123!\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/auth/reset-password",
@@ -224,7 +385,7 @@
                 "reset-password"
               ]
             },
-            "description": "Reset password with token"
+            "description": "Reset password with token from email. Token expires in 1 hour for security."
           },
           "response": []
         }
@@ -236,6 +397,24 @@
       "item": [
         {
           "name": "Upload Excel File",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Excel file upload successful', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.excelId).to.be.a('string');",
+                  "    pm.environment.set('excelFileId', response.excelId);",
+                  "    pm.expect(response.columns).to.be.an('array');",
+                  "    pm.expect(response.rowCount).to.be.a('number');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -373,6 +552,23 @@
       "item": [
         {
           "name": "Create Analysis",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Analysis creation successful', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.analysisId).to.be.a('string');",
+                  "    pm.environment.set('analysisId', response.analysisId);",
+                  "    pm.expect(response.message).to.include('created successfully');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -387,7 +583,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"name\": \"Sample Analysis\",\n    \"description\": \"This is a sample analysis\",\n    \"excelFileId\": \"excel-file-id-here\",\n    \"chartType\": \"2d-bar\",\n    \"chartConfig\": {\n        \"title\": \"Sample Chart\",\n        \"darkMode\": true,\n        \"colors\": [\"#FF6384\", \"#36A2EB\", \"#FFCE56\"]\n    },\n    \"dataMappings\": {\n        \"x\": \"Column A\",\n        \"y\": \"Column B\",\n        \"color\": \"Column C\"\n    }\n}"
+              "raw": "{\n    \"title\": \"Sample Analysis\",\n    \"description\": \"This is a sample analysis\",\n    \"excelId\": \"{{excelFileId}}\",\n    \"chartType\": \"bar\",\n    \"xAxis\": \"Column A\",\n    \"yAxis\": \"Column B\",\n    \"zAxis\": \"Column C\",\n    \"chartConfig\": {\n        \"title\": \"Sample Chart\",\n        \"darkMode\": true,\n        \"colors\": [\"#FF6384\", \"#36A2EB\", \"#FFCE56\"]\n    }\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/analysis",

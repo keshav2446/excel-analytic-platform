@@ -12,7 +12,7 @@ const createAnalysis = async (req, res) => {
       return res.status(404).json({ message: "Excel file not found" });
     }
 
-    if (excelFile.uploadedBy.toString() !== req.user._id.toString() && req.user.role !== "admin") {
+    if (excelFile.uploadedBy.toString() !== req.user.id.toString() && req.user.role !== "admin") {
       return res.status(403).json({ message: "Not authorized to analyze this file" });
     }
 
@@ -26,7 +26,7 @@ const createAnalysis = async (req, res) => {
       yAxis,
       zAxis,
       chartConfig,
-      createdBy: req.user._id,
+      createdBy: req.user.id,
     });
 
     await newAnalysis.save();
@@ -44,7 +44,7 @@ const createAnalysis = async (req, res) => {
 // Get all analyses for a user
 const getUserAnalyses = async (req, res) => {
   try {
-    const analyses = await Analysis.find({ createdBy: req.user._id })
+    const analyses = await Analysis.find({ createdBy: req.user.id })
       .populate({
         path: "excelFile",
         select: "fileName originalName",
@@ -72,7 +72,7 @@ const getAnalysisById = async (req, res) => {
     }
 
     // Check if the user is authorized to access this analysis
-    if (analysis.createdBy.toString() !== req.user._id.toString() && req.user.role !== "admin") {
+    if (analysis.createdBy.toString() !== req.user.id.toString() && req.user.role !== "admin") {
       return res.status(403).json({ message: "Not authorized to access this analysis" });
     }
 
@@ -95,7 +95,7 @@ const updateAnalysis = async (req, res) => {
     }
 
     // Check if the user is authorized to update this analysis
-    if (analysis.createdBy.toString() !== req.user._id.toString() && req.user.role !== "admin") {
+    if (analysis.createdBy.toString() !== req.user.id.toString() && req.user.role !== "admin") {
       return res.status(403).json({ message: "Not authorized to update this analysis" });
     }
 
@@ -130,7 +130,7 @@ const deleteAnalysis = async (req, res) => {
     }
 
     // Check if the user is authorized to delete this analysis
-    if (analysis.createdBy.toString() !== req.user._id.toString() && req.user.role !== "admin") {
+    if (analysis.createdBy.toString() !== req.user.id.toString() && req.user.role !== "admin") {
       return res.status(403).json({ message: "Not authorized to delete this analysis" });
     }
 
@@ -155,7 +155,7 @@ const addAiInsights = async (req, res) => {
     }
 
     // Check if the user is authorized to update this analysis
-    if (analysis.createdBy.toString() !== req.user._id.toString() && req.user.role !== "admin") {
+    if (analysis.createdBy.toString() !== req.user.id.toString() && req.user.role !== "admin") {
       return res.status(403).json({ message: "Not authorized to update this analysis" });
     }
 
