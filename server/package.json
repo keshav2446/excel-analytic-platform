@@ -21,7 +21,11 @@
     "mongoose": "^8.16.1",
     "multer": "^2.0.2",
     "nodemailer": "^7.0.5",
+<<<<<<< HEAD
     "resend": "^5.0.0",
+=======
+    "react-toastify": "^11.0.5",
+>>>>>>> 3aa6953d9b7f40763de79664e18d5fedcfacc8e6
     "xlsx": "^0.18.5"
   },
   "devDependencies": {

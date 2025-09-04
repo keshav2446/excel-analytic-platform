@@ -10,9 +10,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+<<<<<<< HEAD
     "@react-three/drei": "^10.5.1",
     "@react-three/fiber": "^9.2.0",
     "@reduxjs/toolkit": "^2.8.2",
+=======
+    "@lottiefiles/react-lottie-player": "^3.6.0",
+>>>>>>> 3aa6953d9b7f40763de79664e18d5fedcfacc8e6
     "@tailwindcss/vite": "^4.1.11",
     "axios": "^1.10.0",
     "chart.js": "^4.5.0",
